@@ -36,6 +36,17 @@ sub neighbors ($x, $y) {
 	);
 }
 
+sub findflash {
+	for my $y ( 0 .. ($#grid - 1) ) {
+		for my $x ( 0 .. $xwide ) {
+			if ($grid[$y][$x] > 9) {
+				return ($x, $y);
+			}
+		}
+	}
+	return;
+}
+
 sub step {
 	for my $y ( 0 .. ($#grid - 1) ) {
 		my \@r = $grid[$y];
@@ -44,4 +55,24 @@ sub step {
 		}
 	}
 	# Perform flash checks.
+	while (my ($x, $y) = findflash) {
+		++$flashcount;
+		$grid[$y][$x] = -1;
+		my @n = neighbors $x, $y;
+		while (@n) {
+			my $xn = shift;
+			my $yn = shift;
+			if ($grid[$yn][$xn] >= 0) { ++$grid[$yn][$xn]; }
+		}
+	}
 }
+
+use constant STEPS => 100;
+
+my $remain = STEPS;
+
+while ($remain--) {
+	step;
+}
+
+say "Flash count: $flashcount";
