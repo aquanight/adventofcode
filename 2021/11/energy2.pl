@@ -71,12 +71,21 @@ sub step {
 	}	
 }
 
-use constant STEPS => 100;
-
-my $remain = STEPS;
-
-while ($remain--) {
-	step;
+sub is_sync {
+	for my $y ( 0 .. ($#grid - 1) ) {
+		for my $x ( 0 .. $xwide ) {
+			if ($grid[$y][$x] >= 0) { return ""; }
+		}
+	}
+	return 1;
 }
 
+my $stepcount = 0;
+
+while (!is_sync) {
+	step;
+	++$stepcount;
+}
+
+say "Synchronized at step $stepcount";
 say "Flash count: $flashcount";
